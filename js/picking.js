@@ -26,8 +26,9 @@ function getBall(state, elements){
   let num = parseInt(elements.ballDiv.textContent)
   for(let i = 0; i < state.balls.length; i++){
     if(state.balls[i].number == num){
-      toContainer(state.balls[i].number, state.balls[i].color, elements, state)
       moveBalls(i, state.balls, state.pickedBalls)
+      renderPickedBalls(state, elements)
+      break
     }
   }
 }
@@ -35,7 +36,7 @@ function getBall(state, elements){
 function initEventListener(state, elements){
   elements.ballContainerDiv.addEventListener("click", function(e){
 
-    let target = e.target
+    let target = e.target // 이벤트 위임(실제 클릭된 DOM)
     if(target.className!="picked-ball") return
 
     // console.log(target.id)
@@ -49,30 +50,29 @@ function initEventListener(state, elements){
     if(state.pickedBalls.length == 0) {
       return
     }
+
+    // 클릭한 공의 id를 읽어서 pickedBalls -> balls로 이동
     let num = state.pickedBalls.findIndex(ball => ball.number == target.id)
+    if (num === -1) {
+      return
+    }
+
     moveBalls(num, state.pickedBalls, state.balls)
-
-    // console.log(balls)
-    // console.log(pickedBalls)
-
-    target.remove()
-    let pickedBallDivs=document.querySelectorAll(".picked-ball")
-    let redrawBalls=[]
-    for(let i=0; i<pickedBallDivs.length; i++){
-      redrawBalls.push({"number":pickedBallDivs[i].id, "color":pickedBallDivs[i].style.backgroundColor})
-    }
-    
-    emptyContainer()
-
-    for(let i=0; i<pickedBallDivs.length; i++){
-      toContainer(
-        redrawBalls[i].number,
-        redrawBalls[i].color,
-        elements,
-        state
-      )
-    }
+    renderPickedBalls(state, elements)
   })
+}
+
+function renderPickedBalls(state, elements) {
+  emptyContainer()
+
+  for (let i = 0; i < state.pickedBalls.length; i++) {
+    toContainer(
+      state.pickedBalls[i].number,
+      state.pickedBalls[i].color,
+      elements,
+      state
+    )
+  }
 }
 
 // function organizeBalls(num, balls, pickedBalls){
