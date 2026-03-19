@@ -1,24 +1,19 @@
-// function picking(balls, pickedBalls){
-function picking(){
-    if(stopped){
-    stopped=false
-    pickButton.innerText = "뽑아"
-    interval = setInterval(function(){
-      let pickedNumber = Math.floor(Math.random() * balls.length)
-      ballDiv.innerText = balls[pickedNumber].number
-      ballDiv.style.backgroundColor=balls[pickedNumber].color
-      // ballDiv.style.textShadow="-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black"
+function picking(state, elements){
+  if(state.stopped){
+    state.stopped = false
+    elements.pickButton.innerText = "뽑아"
+    state.interval = setInterval(function(){
+      let pickedNumber = Math.floor(Math.random() * state.balls.length)
+      elements.ballDiv.innerText = state.balls[pickedNumber].number
+      elements.ballDiv.style.backgroundColor = state.balls[pickedNumber].color
     }, 60)
-
   }else{
-    stopped=true
-    pickButton.innerText = "쑥쑥"
+    state.stopped = true
+    elements.pickButton.innerText = "쑥쑥"
     playSoundEffect()
-    clearInterval(interval)
-    interval=null;
-    // getBall(balls, pickedBalls)
-    getBall()
-
+    clearInterval(state.interval)
+    state.interval = null
+    getBall(state, elements)
   }
 }
 
@@ -27,57 +22,18 @@ function playSoundEffect(){
   audio.play()
 }
 
-// function getBall(balls, pickedBalls){
-function getBall(){
-  let num=parseInt(ballDiv.textContent)
-  for(let i=0; i<balls.length; i++){
-    if(balls[i].number==num){
-      // 이렇게 하니까 클릭 이후에 새로 그려진 pickedBalls에는 이벤트핸들러가 사라짐
-      // let lastPickedBallDiv = organizeBalls(i, balls, pickedBalls)
-      // lastPickedBallDiv.addEventListener("click", function(){
-      //   let num = pickedBalls.findIndex(ball => ball.number == lastPickedBallDiv.id)
-      //   // console.log(pickedBalls.findIndex(ball => ball.number == number))
-      //   balls.push(new Ball(pickedBalls[num].number, pickedBalls[num].color))
-
-      //   pickedBalls.splice(num, 1)
-      
-      // console.log(balls)
-      // console.log(pickedBalls)
-
-      //   emptyContainer()
-
-      //   for(let i=0; i<pickedBalls.length; i++){
-      //     toContainer(pickedBalls[i].number, pickedBalls[i].color)
-      //   }
-      // })
- 
-      // const lastPickedBallDiv=toContainer(balls[i].number, balls[i].color)
-      toContainer(balls[i].number, balls[i].color)
-      moveBalls(i, balls, pickedBalls)
-      
-      // initEventListener(pickedBalls)
-      // lastPickedBallDiv.addEventListener("click", function(e){
-      //   let num = pickedBalls.findIndex(ball=>ball.number==e.target.id)
-      //   moveBalls(num, pickedBalls, balls)
-      //   // e.target.remove()
-      //   emptyContainer()
-      //   for(let i=0; i<pickedBalls.length; i++){
-      //     toContainer(pickedBalls[i].number, pickedBalls[i].color)
-
-      //     let testDiv=document.querySelector(".ball-container .row"+" #"+pickedBalls[i].number)
-      //     console.log(testDiv)
-      //     testDiv.addEventListener()
-      //   }
-      // })
+function getBall(state, elements){
+  let num = parseInt(elements.ballDiv.textContent)
+  for(let i = 0; i < state.balls.length; i++){
+    if(state.balls[i].number == num){
+      toContainer(state.balls[i].number, state.balls[i].color, elements, state)
+      moveBalls(i, state.balls, state.pickedBalls)
     }
   }
 }
 
-// function initEventListener(balls, pickedBalls){
-
-function initEventListener(){
-  let ballContainerDiv=document.querySelector(".ball-container")
-  ballContainerDiv.addEventListener("click", function(e){
+function initEventListener(state, elements){
+  elements.ballContainerDiv.addEventListener("click", function(e){
 
     let target = e.target
     if(target.className!="picked-ball") return
@@ -90,28 +46,20 @@ function initEventListener(){
     //   "color":target.style.backgroundColor
     // })
 
-    if(pickedBalls.length==0) {
-      // console.log("여기서 return 해버리는거야?")
+    if(state.pickedBalls.length == 0) {
       return
     }
-    let num = pickedBalls.findIndex(ball => ball.number == target.id)
-    moveBalls(num, pickedBalls, balls)
+    let num = state.pickedBalls.findIndex(ball => ball.number == target.id)
+    moveBalls(num, state.pickedBalls, state.balls)
 
     // console.log(balls)
     // console.log(pickedBalls)
 
     target.remove()
-    // console.log(target.id)
-
     let pickedBallDivs=document.querySelectorAll(".picked-ball")
-    // console.log(pickedBallDivs.id)
-
-    // console.log(balls)
     let redrawBalls=[]
     for(let i=0; i<pickedBallDivs.length; i++){
       redrawBalls.push({"number":pickedBallDivs[i].id, "color":pickedBallDivs[i].style.backgroundColor})
-      // console.log(pickedBallDivs[i].id)
-      // console.log(pickedBallDivs[i].style.backgroundColor)
     }
     
     emptyContainer()
@@ -119,18 +67,11 @@ function initEventListener(){
     for(let i=0; i<pickedBallDivs.length; i++){
       toContainer(
         redrawBalls[i].number,
-        redrawBalls[i].color
+        redrawBalls[i].color,
+        elements,
+        state
       )
     }
-
-    // let pickedBalls=    
-
-    // emptyContainer()
-
-    // for(let i=0; i<pickedBalls.length; i++){
-    //   toContainer(pickedBalls[i].number, pickedBalls[i].color)
-    // }
-    
   })
 }
 
@@ -153,14 +94,14 @@ function moveBalls(num, ballsA, ballsB){
   // console.log(ballsB)
 }
 
-function toContainer(number, color){
+function toContainer(number, color, elements, state){
   if(document.querySelectorAll(".ball-container .row .picked-ball").length==0 ||
-    document.querySelectorAll(".ball-container .row .picked-ball").length%ballContainerColNum==0){
-    let rowDiv=ballContainerDiv.appendChild(document.createElement("div"))
+    document.querySelectorAll(".ball-container .row .picked-ball").length%state.ballContainerColNum==0){
+    let rowDiv=elements.ballContainerDiv.appendChild(document.createElement("div"))
     rowDiv.className="row"
   }
 
-  let lastRowDiv=ballContainerDiv.lastElementChild
+  let lastRowDiv=elements.ballContainerDiv.lastElementChild
   let colDiv=lastRowDiv.appendChild(document.createElement("div"))
   colDiv.className="picked-ball"
   colDiv.id=number
