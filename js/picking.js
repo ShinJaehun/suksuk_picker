@@ -4,7 +4,7 @@ function picking(){
     stopped=false
     pickButton.innerText = "뽑아"
     interval = setInterval(function(){
-      let pickedNumber = Math.floor(Math.random()*balls.length-1)+1
+      let pickedNumber = Math.floor(Math.random() * balls.length)
       ballDiv.innerText = balls[pickedNumber].number
       ballDiv.style.backgroundColor=balls[pickedNumber].color
       // ballDiv.style.textShadow="-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black"
