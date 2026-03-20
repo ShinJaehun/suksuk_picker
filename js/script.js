@@ -68,10 +68,10 @@ function main() {
 
       pickButton.innerText = "다시"
     }else{
-      let total=storage['total'] ?? firstN
-      let exnumbers=storage['exnumbers'] ? JSON.parse(storage['exnumbers']) : null 
+      let total=storage["total"] ?? firstN
+      let exnumbers=storage["exnumbers"] ? JSON.parse(storage["exnumbers"]) : null
 
-      initBalls(total, exnumbers)
+      initBalls(state, elements, total, exnumbers)
     }
   })
 
@@ -88,17 +88,17 @@ function main() {
       alert("입력한 내용을 반영합니다!");
 
       let username=elements.usernameInput.value.trim()
-      let total=elements.totalInput.value.trim()
-      let exnumbers=elements.exnumbersInput.value.split(",").map(Number).filter(x=>x>0 && x<total)
+      let total=Number(elements.totalInput.value.trim())
+      let exnumbers=parseExcludedNumbers(elements.exnumbersInput.value, total)
 
       // console.log(total)
       // console.log(exnumbers)
 
-      storage['username']=username
-      storage['total']=total
-      storage['exnumbers']=JSON.stringify(exnumbers)
+      storage["username"]=username
+      storage["total"]=total
+      storage["exnumbers"]=JSON.stringify(exnumbers)
 
-      initBalls(total, exnumbers)
+      initBalls(state, elements, total, exnumbers)
     }
   });
   
@@ -112,22 +112,15 @@ function main() {
 }
 
 function init(){
-  let total=storage['total'] ?? firstN
-  let exnumbers=storage['exnumbers'] ? JSON.parse(storage['exnumbers']) : null 
+  let total=storage["total"] ?? firstN
+  let exnumbers=storage["exnumbers"] ? JSON.parse(storage["exnumbers"]) : []
 
-  initBalls(total, exnumbers)
+  initBalls(state, elements, total, exnumbers)
 }
   
-function initBalls(numbers, exnumbers){
-  let balls_length = state.balls.length
-  for (let i=0; i < balls_length; i++) {
-    state.balls.pop()
-  }
-
-  let pickedBalls_length = state.pickedBalls.length
-  for (let i=0; i < pickedBalls_length; i++) {
-    state.pickedBalls.pop()
-  }
+function initBalls(state, elements, numbers, exnumbers){
+  state.balls.length = 0
+  state.pickedBalls.length = 0
 
   if(exnumbers != null){
     for (let i=1; i<=numbers; i++){
@@ -146,9 +139,9 @@ function initBalls(numbers, exnumbers){
       })
     }
   }
-  emptyContainer()  
+  emptyContainer()
 
-  pickButton.innerText = "시작" 
+  pickButton.innerText = "시작"
   ballDiv.style.backgroundColor="white"
   elements.settingsModal.style.display="none"
 }
@@ -158,4 +151,13 @@ function randomColor(){
   let g = Math.floor(Math.random() * 241);
   let b = Math.floor(Math.random() * 241);
   return `rgb(${r}, ${g}, ${b})`;
+}
+
+function parseExcludedNumbers(value, total){
+  const parsedNumbers = value
+    .split(",")
+    .map(x => Number(x.trim()))
+    .filter(x => Number.isInteger(x) && x > 0 && x <= total)
+
+  return parsedNumbers
 }

@@ -36,8 +36,8 @@ function getBall(state, elements){
 function initEventListener(state, elements){
   elements.ballContainerDiv.addEventListener("click", function(e){
 
-    let target = e.target // 이벤트 위임(실제 클릭된 DOM)
-    if(target.className!="picked-ball") return
+    let target = e.target.closest(".picked-ball")
+    if(!target) return
 
     // console.log(target.id)
     // console.log(target.style.backgroundColor)
@@ -69,6 +69,7 @@ function renderPickedBalls(state, elements) {
     toContainer(
       state.pickedBalls[i].number,
       state.pickedBalls[i].color,
+      i,
       elements,
       state
     )
@@ -94,9 +95,8 @@ function moveBalls(num, ballsA, ballsB){
   // console.log(ballsB)
 }
 
-function toContainer(number, color, elements, state){
-  if(document.querySelectorAll(".ball-container .row .picked-ball").length==0 ||
-    document.querySelectorAll(".ball-container .row .picked-ball").length%state.ballContainerColNum==0){
+function toContainer(number, color, index, elements, state){
+  if(index % state.ballContainerColNum == 0){
     let rowDiv=elements.ballContainerDiv.appendChild(document.createElement("div"))
     rowDiv.className="row"
   }
