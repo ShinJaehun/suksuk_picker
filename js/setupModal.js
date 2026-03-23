@@ -3,6 +3,7 @@ function bindSetupModal(state, storage, firstN, elements) {
     state.stopped = true
     clearInterval(state.interval)
     state.interval = null
+    clearCurrentBall(state, elements)
 
     elements.settingsModal.style.display = "block";
 

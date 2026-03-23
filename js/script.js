@@ -18,6 +18,7 @@ const storage = localStorage
 const state = {
   stopped: true,
   interval: null,
+  currentBall: null,
   balls: [],
   pickedBalls: [],
   ballContainerColNum: 8
@@ -56,20 +57,21 @@ function main() {
 
   init()
   
-  pickButton.addEventListener("click", function(){
+  elements.pickButton.addEventListener("click", function(){
     if(state.balls.length > 1){
       picking(state, elements)
 
     }else if(state.balls.length == 1){
-      ballDiv.innerText = state.balls[0].number
-      ballDiv.style.backgroundColor = state.balls[0].color
+      state.currentBall = state.balls[0]
+      elements.ballDiv.innerText = state.currentBall.number
+      elements.ballDiv.style.backgroundColor = state.currentBall.color
 
       getBall(state, elements)
 
-      pickButton.innerText = "다시"
+      elements.pickButton.innerText = "다시"
     }else{
       let total=storage["total"] ?? firstN
-      let exnumbers=storage["exnumbers"] ? JSON.parse(storage["exnumbers"]) : null
+      let exnumbers=storage["exnumbers"] ? JSON.parse(storage["exnumbers"]) : []
 
       initBalls(state, elements, total, exnumbers)
     }
@@ -82,7 +84,7 @@ function main() {
       alert("빈 칸을 모두 채우세요!");
     }else if(!elements.totalInput.value.match("^[0-9]+$")){
       alert("'인원'에는 숫자만 입력할 수 있습니다.");
-    }else if(!elements.exnumbersInput.value.match("^[0-9]*(,*[0-9]*)*$")){
+    }else if(!elements.exnumbersInput.value.match("^\\s*[0-9]*\\s*(\\s*,\\s*[0-9]*\\s*)*$")){
       alert("'제외할 번호'에는 숫자와 쉼표만 입력할 수 있습니다.")
     }else{
       alert("입력한 내용을 반영합니다!");
@@ -119,30 +121,25 @@ function init(){
 }
   
 function initBalls(state, elements, numbers, exnumbers){
+  state.stopped = true
+  clearInterval(state.interval)
+  state.interval = null
+
   state.balls.length = 0
   state.pickedBalls.length = 0
 
-  if(exnumbers != null){
-    for (let i=1; i<=numbers; i++){
-      if(!exnumbers.includes(i)){
-        state.balls.push({
-          "number":i,
-          "color":randomColor()
-        })
-      }
-    }
-  }else{
-    for (let i=1; i<=numbers; i++){
+  for (let i=1; i<=numbers; i++){
+    if(!exnumbers.includes(i)){
       state.balls.push({
         "number":i,
         "color":randomColor()
       })
     }
   }
-  emptyContainer()
+  emptyContainer(elements)
 
-  pickButton.innerText = "시작"
-  ballDiv.style.backgroundColor="white"
+  elements.pickButton.innerText = "시작"
+  clearCurrentBall(state, elements)
   elements.settingsModal.style.display="none"
 }
 
@@ -155,9 +152,10 @@ function randomColor(){
 
 function parseExcludedNumbers(value, total){
   const parsedNumbers = value
+    .replace(/\s+/g, "")
     .split(",")
-    .map(x => Number(x.trim()))
+    .map(x => Number(x))
     .filter(x => Number.isInteger(x) && x > 0 && x <= total)
 
-  return parsedNumbers
+  return [...new Set(parsedNumbers)]
 }

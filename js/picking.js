@@ -4,8 +4,9 @@ function picking(state, elements){
     elements.pickButton.innerText = "뽑아"
     state.interval = setInterval(function(){
       let pickedNumber = Math.floor(Math.random() * state.balls.length)
-      elements.ballDiv.innerText = state.balls[pickedNumber].number
-      elements.ballDiv.style.backgroundColor = state.balls[pickedNumber].color
+      state.currentBall = state.balls[pickedNumber]
+      elements.ballDiv.innerText = state.currentBall.number
+      elements.ballDiv.style.backgroundColor = state.currentBall.color
     }, 60)
   }else{
     state.stopped = true
@@ -23,7 +24,11 @@ function playSoundEffect(){
 }
 
 function getBall(state, elements){
-  let num = parseInt(elements.ballDiv.textContent)
+  if(!state.currentBall) {
+    return
+  }
+
+  let num = state.currentBall.number
   for(let i = 0; i < state.balls.length; i++){
     if(state.balls[i].number == num){
       moveBalls(i, state.balls, state.pickedBalls)
@@ -58,12 +63,13 @@ function initEventListener(state, elements){
     }
 
     moveBalls(num, state.pickedBalls, state.balls)
+    clearCurrentBall(state, elements)
     renderPickedBalls(state, elements)
   })
 }
 
 function renderPickedBalls(state, elements) {
-  emptyContainer()
+  emptyContainer(elements)
 
   for (let i = 0; i < state.pickedBalls.length; i++) {
     toContainer(
@@ -85,6 +91,10 @@ function renderPickedBalls(state, elements) {
 // }
 
 function moveBalls(num, ballsA, ballsB){
+  if(num < 0 || num >= ballsA.length){
+    return
+  }
+
   // ballsB.push(new Ball(ballsA[num].number, ballsA[num].color))
   ballsB.push({
     "number":ballsA[num].number,
@@ -93,6 +103,12 @@ function moveBalls(num, ballsA, ballsB){
   ballsA.splice(num, 1)
   // console.log(ballsA)
   // console.log(ballsB)
+}
+
+function clearCurrentBall(state, elements){
+  state.currentBall = null
+  elements.ballDiv.innerText = ""
+  elements.ballDiv.style.backgroundColor = "white"
 }
 
 function toContainer(number, color, index, elements, state){
@@ -110,9 +126,8 @@ function toContainer(number, color, index, elements, state){
   // return colDiv
 }
 
-function emptyContainer(){
-  document.querySelectorAll(".ball-container .row .picked-ball").forEach(el => el.remove());
-  document.querySelectorAll(".ball-container .row").forEach(el=>el.remove())
+function emptyContainer(elements){
+  elements.ballContainerDiv.querySelectorAll(".row").forEach(el => el.remove())
 }
 
 // function vLerp(A,B,t){
