@@ -37,14 +37,18 @@ function main() {
     settingsStorage,
     initGame,
     picking,
-    sessionState
+    sessionState,
+    settingsForm: app.createSettingsFormModule({
+      settingsStorage,
+      initGame
+    })
   })
 
   const storage = window.localStorage
   const state = stateModule.createState()
   const elements = getElements()
 
-  state.ballContainerColNum = initGame.getBallContainerColumnCount(window.screen.width)
+  state.ballContainerColNum = initGame.getBallContainerColumnCount(window.innerWidth)
 
   setupModal.bindSetupModal({
     state,
