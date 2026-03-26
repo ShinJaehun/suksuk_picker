@@ -5,8 +5,7 @@ function picking(state, elements){
     state.interval = setInterval(function(){
       let pickedNumber = Math.floor(Math.random() * state.balls.length)
       state.currentBall = state.balls[pickedNumber]
-      elements.ballDiv.innerText = state.currentBall.number
-      elements.ballDiv.style.backgroundColor = state.currentBall.color
+      renderCurrentBall(state, elements)
     }, 60)
   }else{
     elements.pickButton.innerText = "쑥쑥"
@@ -19,6 +18,16 @@ function picking(state, elements){
 function playSoundEffect(){
   var audio = new Audio("resources/retro_coin.wav")
   audio.play()
+}
+
+function renderCurrentBall(state, elements){
+  if(!state.currentBall){
+    clearCurrentBall(state, elements)
+    return
+  }
+
+  elements.ballDiv.innerText = state.currentBall.number
+  elements.ballDiv.style.backgroundColor = state.currentBall.color
 }
 
 function getBall(state, elements){

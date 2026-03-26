@@ -71,8 +71,7 @@ function main() {
 
     }else if(state.balls.length == 1){
       state.currentBall = state.balls[0]
-      elements.ballDiv.innerText = state.currentBall.number
-      elements.ballDiv.style.backgroundColor = state.currentBall.color
+      renderCurrentBall(state, elements)
 
       getBall(state, elements)
 
