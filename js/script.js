@@ -66,21 +66,7 @@ function main() {
   init()
   
   elements.pickButton.addEventListener("click", function(){
-    if(state.balls.length > 1){
-      picking(state, elements)
-
-    }else if(state.balls.length == 1){
-      state.currentBall = state.balls[0]
-      renderCurrentBall(state, elements)
-
-      getBall(state, elements)
-
-      elements.pickButton.innerText = "다시"
-    }else{
-      const { total, exnumbers } = getStoredSettings(storage, firstN)
-
-      initBalls(state, elements, total, exnumbers)
-    }
+    handlePickButtonClick(state, elements, storage, firstN)
   })
 
   settingForm.addEventListener("submit", (e) => {
@@ -117,6 +103,32 @@ function main() {
   }
 
   initEventListener(state, elements)
+}
+
+function handlePickButtonClick(state, elements, storage, defaultTotal){
+  if(state.balls.length > 1){
+    picking(state, elements)
+    return
+  }
+
+  if(state.balls.length === 1){
+    finishLastBall(state, elements)
+    return
+  }
+
+  restartPicking(state, elements, storage, defaultTotal)
+}
+
+function finishLastBall(state, elements){
+  state.currentBall = state.balls[0]
+  renderCurrentBall(state, elements)
+  getBall(state, elements)
+  elements.pickButton.innerText = "다시"
+}
+
+function restartPicking(state, elements, storage, defaultTotal){
+  const { total, exnumbers } = getStoredSettings(storage, defaultTotal)
+  initBalls(state, elements, total, exnumbers)
 }
 
 function init(){
