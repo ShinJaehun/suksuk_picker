@@ -3,14 +3,14 @@ const ballContainerDiv = document.querySelector(".ball-container")
 
 const pickButton = document.getElementById("pick")
 const setupBtn = document.getElementById("setup")
-const settingForm = document.getElementById("setting-form");
-const initBtn=document.getElementById("init");
-const settingsModal = document.getElementById("settings");
-const closeSpan = document.getElementById("close");
-const cancelBtn = document.getElementById("cancel");
-const usernameInput = document.getElementById("username");
-const totalInput = document.getElementById("total");
-const exnumbersInput = document.getElementById("exnumbers");
+const settingForm = document.getElementById("setting-form")
+const initBtn = document.getElementById("init")
+const settingsModal = document.getElementById("settings")
+const closeSpan = document.getElementById("close")
+const cancelBtn = document.getElementById("cancel")
+const usernameInput = document.getElementById("username")
+const totalInput = document.getElementById("total")
+const exnumbersInput = document.getElementById("exnumbers")
 
 const DEFAULT_TOTAL_COUNT = 10
 const DEFAULT_BALL_CONTAINER_COLS = 8
@@ -62,12 +62,11 @@ function main() {
 
   settingForm.addEventListener("submit", (e) => {
     submitSettingsForm(e, state, elements, storage)
-  });
+  })
   
-  initBtn.onclick=function(){
+  initBtn.onclick = function(){
     storage.clear()
     init()
-
   }
 
   initEventListener(state, elements)
@@ -173,22 +172,22 @@ function initBalls(state, elements, numbers, exnumbers){
   for (let i=1; i<=numbers; i++){
     if(!exnumbers.includes(i)){
       state.balls.push({
-        "number":i,
-        "color":randomColor()
+        "number": i,
+        "color": randomColor()
       })
     }
   }
   emptyContainer(elements)
 
   elements.pickButton.innerText = "시작"
-  elements.settingsModal.style.display="none"
+  elements.settingsModal.style.display = "none"
 }
 
 function randomColor(){
-  let r = Math.floor(Math.random() * 241);
-  let g = Math.floor(Math.random() * 241);
-  let b = Math.floor(Math.random() * 241);
-  return `rgb(${r}, ${g}, ${b})`;
+  const r = Math.floor(Math.random() * 241)
+  const g = Math.floor(Math.random() * 241)
+  const b = Math.floor(Math.random() * 241)
+  return `rgb(${r}, ${g}, ${b})`
 }
 
 function parseExcludedNumbers(value, total){
