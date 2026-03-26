@@ -62,30 +62,7 @@ function main() {
   })
 
   settingForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-  
-    if(elements.usernameInput.value=="" || elements.totalInput.value == ""){
-      alert("빈 칸을 모두 채우세요!");
-    }else if(!elements.totalInput.value.match("^[0-9]+$")){
-      alert("'인원'에는 숫자만 입력할 수 있습니다.");
-    }else if(!elements.exnumbersInput.value.match("^\\s*[0-9]*\\s*(\\s*,\\s*[0-9]*\\s*)*$")){
-      alert("'제외할 번호'에는 숫자와 쉼표만 입력할 수 있습니다.")
-    }else{
-      alert("입력한 내용을 반영합니다!");
-
-      let username=elements.usernameInput.value.trim()
-      let total=Number(elements.totalInput.value.trim())
-      let exnumbers=parseExcludedNumbers(elements.exnumbersInput.value, total)
-
-      // console.log(total)
-      // console.log(exnumbers)
-
-      storage["username"]=username
-      storage["total"]=total
-      storage["exnumbers"]=JSON.stringify(exnumbers)
-
-      initBalls(state, elements, total, exnumbers)
-    }
+    submitSettingsForm(e, state, elements, storage)
   });
   
   initBtn.onclick=function(){
@@ -132,6 +109,54 @@ function finishLastBall(state, elements){
 function restartPicking(state, elements, storage, defaultTotal){
   const { total, exnumbers } = getStoredSettings(storage, defaultTotal)
   initBalls(state, elements, total, exnumbers)
+}
+
+function submitSettingsForm(event, state, elements, storage){
+  event.preventDefault()
+
+  const validationMessage = validateSettingsForm(elements)
+  if(validationMessage){
+    alert(validationMessage)
+    return
+  }
+
+  alert("입력한 내용을 반영합니다!")
+
+  const settings = getSettingsFormValues(elements)
+  saveSettings(storage, settings)
+  initBalls(state, elements, settings.total, settings.exnumbers)
+}
+
+function validateSettingsForm(elements){
+  if(elements.usernameInput.value === "" || elements.totalInput.value === ""){
+    return "빈 칸을 모두 채우세요!"
+  }
+
+  if(!elements.totalInput.value.match("^[0-9]+$")){
+    return "'인원'에는 숫자만 입력할 수 있습니다."
+  }
+
+  if(!elements.exnumbersInput.value.match("^\\s*[0-9]*\\s*(\\s*,\\s*[0-9]*\\s*)*$")){
+    return "'제외할 번호'에는 숫자와 쉼표만 입력할 수 있습니다."
+  }
+
+  return null
+}
+
+function getSettingsFormValues(elements){
+  const total = Number(elements.totalInput.value.trim())
+
+  return {
+    username: elements.usernameInput.value.trim(),
+    total,
+    exnumbers: parseExcludedNumbers(elements.exnumbersInput.value, total)
+  }
+}
+
+function saveSettings(storage, settings){
+  storage["username"] = settings.username
+  storage["total"] = settings.total
+  storage["exnumbers"] = JSON.stringify(settings.exnumbers)
 }
 
 function init(){
