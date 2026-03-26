@@ -14,27 +14,30 @@ function main() {
     storageKeys: STORAGE_KEYS,
     defaultUsername: STORAGE_DEFAULT_USERNAME
   })
-
   const render = app.render
+  const sessionState = app.createSessionStateModule({ render })
   const initGame = app.createInitGameModule({
     constants: app.constants,
     settingsStorage,
-    render
+    render,
+    sessionState
   })
   const picking = app.createPickingModule({
     constants: app.constants,
     settingsStorage,
     render,
-    initGame
+    initGame,
+    sessionState
   })
   const setupModal = app.createSetupModalModule({
     settingsStorage,
-    picking
+    sessionState
   })
   const events = app.createEventsModule({
     settingsStorage,
     initGame,
-    picking
+    picking,
+    sessionState
   })
 
   const storage = window.localStorage
@@ -54,8 +57,7 @@ function main() {
     state,
     elements,
     storage,
-    defaultTotal: DEFAULT_TOTAL_COUNT,
-    resetCurrentSelection: picking.resetCurrentSelection
+    defaultTotal: DEFAULT_TOTAL_COUNT
   })
 
   events.bindEvents({

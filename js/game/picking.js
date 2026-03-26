@@ -1,8 +1,9 @@
-function createPickingModule({ constants, settingsStorage, render, initGame }) {
+function createPickingModule({ constants, settingsStorage, render, initGame, sessionState }) {
   const { PICK_BUTTON_LABELS, PICKING_INTERVAL_MS } = constants
   const { getStoredSettings } = settingsStorage
   const { renderCurrentBall, clearCurrentBall, renderPickedBalls } = render
   const { initBalls } = initGame
+  const { stopPickingSession, resetCurrentSelection } = sessionState
 
   function picking(state, elements) {
     if (state.stopped) {
@@ -31,7 +32,7 @@ function createPickingModule({ constants, settingsStorage, render, initGame }) {
 
   function restartPicking(state, elements, storage, defaultTotal) {
     const { total, exnumbers } = getStoredSettings(storage, defaultTotal)
-    initBalls(state, elements, total, exnumbers, resetCurrentSelection)
+    initBalls(state, elements, total, exnumbers)
   }
 
   function getBall(state, elements) {
@@ -47,17 +48,6 @@ function createPickingModule({ constants, settingsStorage, render, initGame }) {
         break
       }
     }
-  }
-
-  function stopPickingSession(state) {
-    state.stopped = true
-    clearInterval(state.interval)
-    state.interval = null
-  }
-
-  function resetCurrentSelection(state, elements) {
-    stopPickingSession(state)
-    clearCurrentBall(state, elements)
   }
 
   function returnPickedBall(ballNumber, state, elements) {
@@ -94,8 +84,6 @@ function createPickingModule({ constants, settingsStorage, render, initGame }) {
     finishLastBall,
     restartPicking,
     getBall,
-    stopPickingSession,
-    resetCurrentSelection,
     returnPickedBall,
     moveBallAtIndex
   }

@@ -2,9 +2,9 @@ function hideSettingsModal(elements) {
   elements.settingsModal.style.display = "none"
 }
 
-function createSetupModalModule({ settingsStorage, picking }) {
+function createSetupModalModule({ settingsStorage, sessionState }) {
   const { getStoredSettings } = settingsStorage
-  const { resetCurrentSelection } = picking
+  const { resetCurrentSelection } = sessionState
 
   function bindSetupModal({ state, elements, storage, defaultTotal }) {
     elements.setupBtn.onclick = function () {

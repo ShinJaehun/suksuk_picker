@@ -1,4 +1,4 @@
-function createEventsModule({ settingsStorage, initGame, picking }) {
+function createEventsModule({ settingsStorage, initGame, picking, sessionState }) {
   const { resetStoredSettings, saveSettings } = settingsStorage
   const {
     initBalls,
@@ -8,10 +8,10 @@ function createEventsModule({ settingsStorage, initGame, picking }) {
   const {
     finishLastBall,
     picking: runPicking,
-    resetCurrentSelection,
     restartPicking,
     returnPickedBall
   } = picking
+  const { resetCurrentSelection } = sessionState
 
   function bindEvents({ state, elements, storage, defaultTotal }) {
     elements.pickButton.addEventListener("click", function () {
@@ -24,7 +24,7 @@ function createEventsModule({ settingsStorage, initGame, picking }) {
 
     elements.initBtn.onclick = function () {
       resetStoredSettings(storage)
-      startGame({ state, elements, storage, defaultTotal, resetCurrentSelection })
+      startGame({ state, elements, storage, defaultTotal })
     }
 
     elements.ballContainerDiv.addEventListener("click", function (event) {
@@ -64,7 +64,7 @@ function createEventsModule({ settingsStorage, initGame, picking }) {
 
     const settings = getSettingsFormValues(elements)
     saveSettings(storage, settings)
-    initBalls(state, elements, settings.total, settings.exnumbers, resetCurrentSelection)
+    initBalls(state, elements, settings.total, settings.exnumbers)
   }
 
   function validateSettingsForm(elements) {

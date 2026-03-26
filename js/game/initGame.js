@@ -1,4 +1,4 @@
-function createInitGameModule({ constants, settingsStorage, render }) {
+function createInitGameModule({ constants, settingsStorage, render, sessionState }) {
   const {
     BALL_CONTAINER_COL_RULES,
     DEFAULT_BALL_CONTAINER_COLS,
@@ -6,6 +6,7 @@ function createInitGameModule({ constants, settingsStorage, render }) {
   } = constants
   const { getStoredSettings } = settingsStorage
   const { emptyContainer } = render
+  const { resetCurrentSelection } = sessionState
 
   function getBallContainerColumnCount(screenWidth) {
     for (let index = 0; index < BALL_CONTAINER_COL_RULES.length; index += 1) {
@@ -18,12 +19,12 @@ function createInitGameModule({ constants, settingsStorage, render }) {
     return DEFAULT_BALL_CONTAINER_COLS
   }
 
-  function initGame({ state, elements, storage, defaultTotal, resetCurrentSelection }) {
+  function initGame({ state, elements, storage, defaultTotal }) {
     const { total, exnumbers } = getStoredSettings(storage, defaultTotal)
-    initBalls(state, elements, total, exnumbers, resetCurrentSelection)
+    initBalls(state, elements, total, exnumbers)
   }
 
-  function initBalls(state, elements, numbers, exnumbers, resetCurrentSelection) {
+  function initBalls(state, elements, numbers, exnumbers) {
     resetCurrentSelection(state, elements)
     state.balls.length = 0
     state.pickedBalls.length = 0
