@@ -14,6 +14,13 @@ const totalInput = document.getElementById("total");
 const exnumbersInput = document.getElementById("exnumbers");
 
 const firstN=10
+const DEFAULT_BALL_CONTAINER_COLS = 8
+const BALL_CONTAINER_COL_RULES = [
+  { maxWidth: 300, columns: 3 },
+  { maxWidth: 380, columns: 4 },
+  { maxWidth: 450, columns: 5 },
+  { maxWidth: 550, columns: 6 }
+]
 const storage = localStorage
 const state = {
   stopped: true,
@@ -21,7 +28,7 @@ const state = {
   currentBall: null,
   balls: [],
   pickedBalls: [],
-  ballContainerColNum: 8
+  ballContainerColNum: DEFAULT_BALL_CONTAINER_COLS
 }
 const elements = {
   ballDiv,
@@ -46,22 +53,7 @@ function getStoredSettings(storage, defaultTotal) {
 
 function main() {
   bindSetupModal(state, storage, firstN, elements)
-
-  if (window.screen.width <= 550) {
-    state.ballContainerColNum=6
-  }
-
-  if (window.screen.width <= 450) {
-    state.ballContainerColNum=5
-  }
-
-  if (window.screen.width <= 380) {
-    state.ballContainerColNum=4
-  }
-
-  if (window.screen.width <= 300) {
-    state.ballContainerColNum=3
-  }
+  state.ballContainerColNum = getBallContainerColumnCount(window.screen.width)
 
   init()
   
@@ -103,6 +95,17 @@ function main() {
   }
 
   initEventListener(state, elements)
+}
+
+function getBallContainerColumnCount(screenWidth){
+  for (let i = 0; i < BALL_CONTAINER_COL_RULES.length; i++) {
+    const rule = BALL_CONTAINER_COL_RULES[i]
+    if(screenWidth <= rule.maxWidth){
+      return rule.columns
+    }
+  }
+
+  return DEFAULT_BALL_CONTAINER_COLS
 }
 
 function handlePickButtonClick(state, elements, storage, defaultTotal){
