@@ -35,10 +35,10 @@ function getBall(state, elements){
     return
   }
 
-  let num = state.currentBall.number
+  const currentBallNumber = state.currentBall.number
   for(let i = 0; i < state.balls.length; i++){
-    if(state.balls[i].number == num){
-      moveBalls(i, state.balls, state.pickedBalls)
+    if(state.balls[i].number == currentBallNumber){
+      moveBallAtIndex(i, state.balls, state.pickedBalls)
       renderPickedBalls(state, elements)
       break
     }
@@ -86,7 +86,7 @@ function returnPickedBall(ballNumber, state, elements){
     return
   }
 
-  moveBalls(pickedBallIndex, state.pickedBalls, state.balls)
+  moveBallAtIndex(pickedBallIndex, state.pickedBalls, state.balls)
   clearCurrentBall(state, elements)
   renderPickedBalls(state, elements)
 }
@@ -105,16 +105,16 @@ function renderPickedBalls(state, elements) {
   }
 }
 
-function moveBalls(num, ballsA, ballsB){
-  if(num < 0 || num >= ballsA.length){
+function moveBallAtIndex(ballIndex, sourceBalls, targetBalls){
+  if(ballIndex < 0 || ballIndex >= sourceBalls.length){
     return
   }
 
-  ballsB.push({
-    "number":ballsA[num].number,
-    "color":ballsA[num].color
+  targetBalls.push({
+    "number":sourceBalls[ballIndex].number,
+    "color":sourceBalls[ballIndex].color
   })
-  ballsA.splice(num, 1)
+  sourceBalls.splice(ballIndex, 1)
 }
 
 function clearCurrentBall(state, elements){
