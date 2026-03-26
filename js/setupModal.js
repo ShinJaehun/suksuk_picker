@@ -1,10 +1,10 @@
-function bindSetupModal(state, storage, firstN, elements) {
+function bindSetupModal(state, storage, defaultTotal, elements) {
   elements.setupBtn.onclick = function() {
     resetCurrentSelection(state, elements)
 
     elements.settingsModal.style.display = "block";
 
-    const settings = getStoredSettings(storage, firstN)
+    const settings = getStoredSettings(storage, defaultTotal)
     elements.usernameInput.value = settings.username
     elements.totalInput.value = settings.total
     elements.exnumbersInput.value = settings.exnumbers.join(",")

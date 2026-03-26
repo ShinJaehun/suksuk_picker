@@ -16,7 +16,7 @@ function picking(state, elements){
 }
 
 function playSoundEffect(){
-  var audio = new Audio("resources/retro_coin.wav")
+  const audio = new Audio("resources/retro_coin.wav")
   audio.play()
 }
 
@@ -115,8 +115,6 @@ function moveBalls(num, ballsA, ballsB){
     "color":ballsA[num].color
   })
   ballsA.splice(num, 1)
-  // console.log(ballsA)
-  // console.log(ballsB)
 }
 
 function clearCurrentBall(state, elements){
@@ -137,7 +135,6 @@ function toContainer(number, color, index, elements, state){
   colDiv.id=number
   colDiv.style="background-color:"+color
   colDiv.innerText=number
-  // return colDiv
 }
 
 function emptyContainer(elements){

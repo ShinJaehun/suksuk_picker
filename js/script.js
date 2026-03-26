@@ -1,6 +1,5 @@
 const ballDiv = document.querySelector(".ball")
 const ballContainerDiv = document.querySelector(".ball-container")
-// const pickedBallDivs = document.querySelectorAll(".picked-ball")
 
 const pickButton = document.getElementById("pick")
 const setupBtn = document.getElementById("setup")
@@ -13,7 +12,7 @@ const usernameInput = document.getElementById("username");
 const totalInput = document.getElementById("total");
 const exnumbersInput = document.getElementById("exnumbers");
 
-const firstN=10
+const DEFAULT_TOTAL_COUNT = 10
 const DEFAULT_BALL_CONTAINER_COLS = 8
 const BALL_CONTAINER_COL_RULES = [
   { maxWidth: 300, columns: 3 },
@@ -52,13 +51,13 @@ function getStoredSettings(storage, defaultTotal) {
 }
 
 function main() {
-  bindSetupModal(state, storage, firstN, elements)
+  bindSetupModal(state, storage, DEFAULT_TOTAL_COUNT, elements)
   state.ballContainerColNum = getBallContainerColumnCount(window.screen.width)
 
   init()
   
   elements.pickButton.addEventListener("click", function(){
-    handlePickButtonClick(state, elements, storage, firstN)
+    handlePickButtonClick(state, elements, storage, DEFAULT_TOTAL_COUNT)
   })
 
   settingForm.addEventListener("submit", (e) => {
@@ -160,7 +159,7 @@ function saveSettings(storage, settings){
 }
 
 function init(){
-  const { total, exnumbers } = getStoredSettings(storage, firstN)
+  const { total, exnumbers } = getStoredSettings(storage, DEFAULT_TOTAL_COUNT)
 
   initBalls(state, elements, total, exnumbers)
 }
