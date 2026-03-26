@@ -58,27 +58,37 @@ function resetCurrentSelection(state, elements){
 
 function initEventListener(state, elements){
   elements.ballContainerDiv.addEventListener("click", function(e){
-
-    let target = e.target.closest(".picked-ball")
-    if(!target) return
-
-    // console.log(target.id)
-    // console.log(target.style.backgroundColor)
-
-    if(state.pickedBalls.length == 0) {
+    const clickedBallNumber = getClickedPickedBallNumber(e)
+    if(clickedBallNumber === null) {
       return
     }
 
-    // 클릭한 공의 id를 읽어서 pickedBalls -> balls로 이동
-    let num = state.pickedBalls.findIndex(ball => ball.number == target.id)
-    if (num === -1) {
-      return
-    }
-
-    moveBalls(num, state.pickedBalls, state.balls)
-    clearCurrentBall(state, elements)
-    renderPickedBalls(state, elements)
+    returnPickedBall(clickedBallNumber, state, elements)
   })
+}
+
+function getClickedPickedBallNumber(event){
+  const target = event.target.closest(".picked-ball")
+  if(!target) {
+    return null
+  }
+
+  return Number(target.id)
+}
+
+function returnPickedBall(ballNumber, state, elements){
+  if(state.pickedBalls.length === 0) {
+    return
+  }
+
+  const pickedBallIndex = state.pickedBalls.findIndex(ball => ball.number === ballNumber)
+  if(pickedBallIndex === -1) {
+    return
+  }
+
+  moveBalls(pickedBallIndex, state.pickedBalls, state.balls)
+  clearCurrentBall(state, elements)
+  renderPickedBalls(state, elements)
 }
 
 function renderPickedBalls(state, elements) {
