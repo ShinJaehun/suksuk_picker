@@ -1,11 +1,21 @@
 function main() {
   const app = window.SuksukApp
-  const { DEFAULT_TOTAL_COUNT } = app.constants
+  const {
+    DEFAULT_TOTAL_COUNT,
+    DEFAULT_BALL_CONTAINER_COLS,
+    STORAGE_DEFAULT_USERNAME,
+    STORAGE_KEYS
+  } = app.constants
   const { getElements } = app.elements
-  const { createState } = app.state
+  const stateModule = app.createStateModule({
+    defaultBallContainerCols: DEFAULT_BALL_CONTAINER_COLS
+  })
+  const settingsStorage = app.createSettingsStorageModule({
+    storageKeys: STORAGE_KEYS,
+    defaultUsername: STORAGE_DEFAULT_USERNAME
+  })
 
   const render = app.render
-  const settingsStorage = app.settingsStorage
   const initGame = app.createInitGameModule({
     constants: app.constants,
     settingsStorage,
@@ -28,7 +38,7 @@ function main() {
   })
 
   const storage = window.localStorage
-  const state = createState()
+  const state = stateModule.createState()
   const elements = getElements()
 
   state.ballContainerColNum = initGame.getBallContainerColumnCount(window.screen.width)
