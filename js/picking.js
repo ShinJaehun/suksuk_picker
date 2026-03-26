@@ -9,11 +9,9 @@ function picking(state, elements){
       elements.ballDiv.style.backgroundColor = state.currentBall.color
     }, 60)
   }else{
-    state.stopped = true
     elements.pickButton.innerText = "쑥쑥"
     playSoundEffect()
-    clearInterval(state.interval)
-    state.interval = null
+    stopPickingSession(state)
     getBall(state, elements)
   }
 }
@@ -38,6 +36,17 @@ function getBall(state, elements){
   }
 }
 
+function stopPickingSession(state){
+  state.stopped = true
+  clearInterval(state.interval)
+  state.interval = null
+}
+
+function resetCurrentSelection(state, elements){
+  stopPickingSession(state)
+  clearCurrentBall(state, elements)
+}
+
 function initEventListener(state, elements){
   elements.ballContainerDiv.addEventListener("click", function(e){
 
@@ -46,11 +55,6 @@ function initEventListener(state, elements){
 
     // console.log(target.id)
     // console.log(target.style.backgroundColor)
-
-    // balls.push({
-    //   "number":target.id,
-    //   "color":target.style.backgroundColor
-    // })
 
     if(state.pickedBalls.length == 0) {
       return
@@ -82,20 +86,11 @@ function renderPickedBalls(state, elements) {
   }
 }
 
-// function organizeBalls(num, balls, pickedBalls){
-//   pickedBalls.push(new Ball(balls[num].number, balls[num].color))
-//   let colDiv=toContainer(balls[num].number, balls[num].color, pickedBalls)
-//   balls.splice(num, 1)
-//   // console.log(balls)
-//   return colDiv
-// }
-
 function moveBalls(num, ballsA, ballsB){
   if(num < 0 || num >= ballsA.length){
     return
   }
 
-  // ballsB.push(new Ball(ballsA[num].number, ballsA[num].color))
   ballsB.push({
     "number":ballsA[num].number,
     "color":ballsA[num].color
@@ -129,15 +124,3 @@ function toContainer(number, color, index, elements, state){
 function emptyContainer(elements){
   elements.ballContainerDiv.querySelectorAll(".row").forEach(el => el.remove())
 }
-
-// function vLerp(A,B,t){
-//   const res={};
-//   for(let attr in A){
-//       res[attr]=lerp(A[attr],B[attr],t);
-//   }
-//   return res;
-// }
-
-// function lerp(a,b,t){
-//   return a+(b-a)*t
-// }

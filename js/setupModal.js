@@ -1,16 +1,13 @@
 function bindSetupModal(state, storage, firstN, elements) {
   elements.setupBtn.onclick = function() {
-    state.stopped = true
-    clearInterval(state.interval)
-    state.interval = null
-    clearCurrentBall(state, elements)
+    resetCurrentSelection(state, elements)
 
     elements.settingsModal.style.display = "block";
 
-    elements.usernameInput.value=storage["username"] ?? "noname"
-    elements.totalInput.value=storage["total"] ?? firstN
-    let exnumbers=storage["exnumbers"] ? JSON.parse(storage["exnumbers"]) : []
-    elements.exnumbersInput.value=exnumbers.join(",")
+    const settings = getStoredSettings(storage, firstN)
+    elements.usernameInput.value = settings.username
+    elements.totalInput.value = settings.total
+    elements.exnumbersInput.value = settings.exnumbers.join(",")
   }
   elements.closeSpan.onclick = function() {
     elements.settingsModal.style.display = "none";

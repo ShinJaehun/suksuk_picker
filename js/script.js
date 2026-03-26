@@ -36,6 +36,14 @@ const elements = {
   exnumbersInput
 }
 
+function getStoredSettings(storage, defaultTotal) {
+  return {
+    username: storage["username"] ?? "noname",
+    total: Number(storage["total"] ?? defaultTotal),
+    exnumbers: storage["exnumbers"] ? JSON.parse(storage["exnumbers"]) : []
+  }
+}
+
 function main() {
   bindSetupModal(state, storage, firstN, elements)
 
@@ -70,8 +78,7 @@ function main() {
 
       elements.pickButton.innerText = "다시"
     }else{
-      let total=storage["total"] ?? firstN
-      let exnumbers=storage["exnumbers"] ? JSON.parse(storage["exnumbers"]) : []
+      const { total, exnumbers } = getStoredSettings(storage, firstN)
 
       initBalls(state, elements, total, exnumbers)
     }
@@ -114,16 +121,13 @@ function main() {
 }
 
 function init(){
-  let total=storage["total"] ?? firstN
-  let exnumbers=storage["exnumbers"] ? JSON.parse(storage["exnumbers"]) : []
+  const { total, exnumbers } = getStoredSettings(storage, firstN)
 
   initBalls(state, elements, total, exnumbers)
 }
   
 function initBalls(state, elements, numbers, exnumbers){
-  state.stopped = true
-  clearInterval(state.interval)
-  state.interval = null
+  resetCurrentSelection(state, elements)
 
   state.balls.length = 0
   state.pickedBalls.length = 0
@@ -139,7 +143,6 @@ function initBalls(state, elements, numbers, exnumbers){
   emptyContainer(elements)
 
   elements.pickButton.innerText = "시작"
-  clearCurrentBall(state, elements)
   elements.settingsModal.style.display="none"
 }
 
