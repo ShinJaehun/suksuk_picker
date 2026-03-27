@@ -74,4 +74,9 @@ function main() {
 
 window.SuksukApp = window.SuksukApp || {}
 window.SuksukApp.main = main
-main()
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", main, { once: true })
+} else {
+  main()
+}
