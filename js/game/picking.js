@@ -23,6 +23,20 @@ function createPickingModule({ constants, settingsStorage, render, initGame, ses
     getBall(state, elements)
   }
 
+  function handlePickButtonClick(state, elements, storage, defaultTotal) {
+    if (state.balls.length > 1) {
+      picking(state, elements)
+      return
+    }
+
+    if (state.balls.length === 1) {
+      finishLastBall(state, elements)
+      return
+    }
+
+    restartPicking(state, elements, storage, defaultTotal)
+  }
+
   function finishLastBall(state, elements) {
     state.currentBall = state.balls[0]
     renderCurrentBall(state, elements)
@@ -80,6 +94,7 @@ function createPickingModule({ constants, settingsStorage, render, initGame, ses
   }
 
   return {
+    handlePickButtonClick,
     picking,
     finishLastBall,
     restartPicking,

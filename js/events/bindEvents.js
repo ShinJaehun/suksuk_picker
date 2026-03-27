@@ -4,12 +4,9 @@ function createEventsModule({ settingsStorage, initGame, picking, sessionState, 
     initGame: startGame
   } = initGame
   const {
-    finishLastBall,
-    picking: runPicking,
-    restartPicking,
+    handlePickButtonClick,
     returnPickedBall
   } = picking
-  const { resetCurrentSelection } = sessionState
   const { submitSettingsForm } = settingsForm
 
   function bindEvents({ state, elements, storage, defaultTotal }) {
@@ -36,19 +33,6 @@ function createEventsModule({ settingsStorage, initGame, picking, sessionState, 
     })
   }
 
-  function handlePickButtonClick(state, elements, storage, defaultTotal) {
-    if (state.balls.length > 1) {
-      runPicking(state, elements)
-      return
-    }
-
-    if (state.balls.length === 1) {
-      finishLastBall(state, elements)
-      return
-    }
-
-    restartPicking(state, elements, storage, defaultTotal)
-  }
   function getClickedPickedBallNumber(event) {
     const target = event.target.closest(".picked-ball")
     if (!target) {
