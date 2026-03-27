@@ -40,6 +40,51 @@
     color: #454545;
 }
 
+.control-panel {
+    width: min(520px, calc(100% - 32px));
+    margin: 0 0 20px;
+    padding: 16px;
+    border: 2px solid #f2d74d;
+    border-radius: 12px;
+    background-color: #fff9d4;
+    box-sizing: border-box;
+}
+
+.control-panel-title {
+    font-size: 0.8em;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.control-panel-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 0.6em;
+}
+
+.control-panel-input {
+    width: 90px;
+    height: 36px;
+    border: 1px solid #c2c2c2;
+    border-radius: 8px;
+    padding: 0 8px;
+    font-size: 0.9em;
+    box-sizing: border-box;
+}
+
+.control-panel-status,
+.control-panel-message {
+    margin: 12px 0 0;
+    font-size: 0.5em;
+}
+
+.control-panel-message {
+    min-height: 1.3em;
+}
+
 button{
     font-size: 0.5em;
     margin: 0 5px;
@@ -184,6 +229,10 @@ button:hover{
 @media(max-width: 600px) {
     .form-style input.input-field, .form-style .select-field{
         width: 40%;	
+    }
+
+    .control-panel {
+        width: calc(100% - 24px);
     }
 }
 

@@ -1,6 +1,7 @@
-function createSettingsFormModule({ settingsStorage, initGame }) {
+export function createSettingsForm({ settingsStorage, initGame, reservation }) {
   const { saveSettings } = settingsStorage
   const { initBalls, parseExcludedNumbers } = initGame
+  const { clearReservationSilently } = reservation
 
   function submitSettingsForm(event, state, elements, storage) {
     event.preventDefault()
@@ -14,8 +15,10 @@ function createSettingsFormModule({ settingsStorage, initGame }) {
     alert("입력한 내용을 반영합니다!")
 
     const settings = getSettingsFormValues(elements)
+    state.settings.username = settings.username
     saveSettings(storage, settings)
-    initBalls(state, elements, settings.total, settings.exnumbers)
+    clearReservationSilently(state, elements, storage)
+    initBalls(state, elements, storage, settings.total, settings.exnumbers)
   }
 
   function validateSettingsForm(elements) {
@@ -48,6 +51,3 @@ function createSettingsFormModule({ settingsStorage, initGame }) {
     submitSettingsForm
   }
 }
-
-window.SuksukApp = window.SuksukApp || {}
-window.SuksukApp.createSettingsFormModule = createSettingsFormModule

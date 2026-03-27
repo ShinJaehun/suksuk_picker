@@ -1,33 +1,45 @@
-function renderCurrentBall(state, elements) {
-  if (!state.currentBall) {
+import { RESERVATION_STATUS_LABEL } from "../constants.js"
+
+export function renderCurrentBall(state, elements) {
+  const { currentBall } = state.drawSession
+  if (!currentBall) {
     clearCurrentBall(state, elements)
     return
   }
 
-  elements.ballDiv.innerText = state.currentBall.number
-  elements.ballDiv.style.backgroundColor = state.currentBall.color
+  elements.ballDiv.innerText = currentBall.number
+  elements.ballDiv.style.backgroundColor = currentBall.color
 }
 
-function clearCurrentBall(state, elements) {
-  state.currentBall = null
+export function clearCurrentBall(state, elements) {
+  state.drawSession.currentBall = null
   elements.ballDiv.innerText = ""
   elements.ballDiv.style.backgroundColor = "white"
 }
 
-function renderPickedBalls(state, elements) {
+export function renderPickedBalls(state, elements) {
   emptyContainer(elements)
 
-  for (let index = 0; index < state.pickedBalls.length; index += 1) {
-    appendPickedBall(state.pickedBalls[index], index, elements, state)
+  for (let index = 0; index < state.drawSession.pickedBalls.length; index += 1) {
+    appendPickedBall(state.drawSession.pickedBalls[index], index, elements, state)
   }
 }
 
-function emptyContainer(elements) {
+export function renderControlPanel(state, elements) {
+  const reservedBallLabel = state.control.nextReservedBall === null
+    ? `${RESERVATION_STATUS_LABEL}: 없음`
+    : `${RESERVATION_STATUS_LABEL}: ${state.control.nextReservedBall}`
+
+  elements.reservedBallStatus.innerText = reservedBallLabel
+  elements.reservationMessage.innerText = state.control.message
+}
+
+export function emptyContainer(elements) {
   elements.ballContainerDiv.querySelectorAll(".row").forEach((rowElement) => rowElement.remove())
 }
 
 function appendPickedBall(ball, index, elements, state) {
-  if (index % state.ballContainerColNum === 0) {
+  if (index % state.ui.ballContainerColNum === 0) {
     const rowDiv = elements.ballContainerDiv.appendChild(document.createElement("div"))
     rowDiv.className = "row"
   }
@@ -38,12 +50,4 @@ function appendPickedBall(ball, index, elements, state) {
   colDiv.id = String(ball.number)
   colDiv.style.backgroundColor = ball.color
   colDiv.innerText = ball.number
-}
-
-window.SuksukApp = window.SuksukApp || {}
-window.SuksukApp.render = {
-  renderCurrentBall,
-  clearCurrentBall,
-  renderPickedBalls,
-  emptyContainer
 }

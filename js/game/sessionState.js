@@ -1,22 +1,32 @@
-function createSessionStateModule({ render }) {
+export function createSessionState({ render, sessionStorage }) {
   const { clearCurrentBall } = render
 
-  function stopPickingSession(state) {
-    state.stopped = true
-    clearInterval(state.interval)
-    state.interval = null
+  function persistSession(state, storage) {
+    sessionStorage.saveSession(storage, state.drawSession, state.control)
   }
 
-  function resetCurrentSelection(state, elements) {
-    stopPickingSession(state)
+  function stopPickingSession(state, storage) {
+    state.drawSession.stopped = true
+    clearInterval(state.drawSession.interval)
+    state.drawSession.interval = null
+
+    if (storage) {
+      persistSession(state, storage)
+    }
+  }
+
+  function resetCurrentSelection(state, elements, storage) {
+    stopPickingSession(state, storage)
     clearCurrentBall(state, elements)
+
+    if (storage) {
+      persistSession(state, storage)
+    }
   }
 
   return {
+    persistSession,
     stopPickingSession,
     resetCurrentSelection
   }
 }
-
-window.SuksukApp = window.SuksukApp || {}
-window.SuksukApp.createSessionStateModule = createSessionStateModule

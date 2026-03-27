@@ -1,82 +1,123 @@
-function createPickingModule({ constants, settingsStorage, render, initGame, sessionState }) {
+export function createPicking({
+  constants,
+  settingsStorage,
+  render,
+  initGame,
+  sessionState,
+  reservation
+}) {
   const { PICK_BUTTON_LABELS, PICKING_INTERVAL_MS } = constants
   const { getStoredSettings } = settingsStorage
-  const { renderCurrentBall, clearCurrentBall, renderPickedBalls } = render
+  const { renderCurrentBall, clearCurrentBall, renderPickedBalls, renderControlPanel } = render
   const { initBalls } = initGame
-  const { stopPickingSession, resetCurrentSelection } = sessionState
+  const { stopPickingSession, persistSession } = sessionState
+  const { consumeReservedBall } = reservation
 
-  function picking(state, elements) {
-    if (state.stopped) {
-      state.stopped = false
-      elements.pickButton.innerText = PICK_BUTTON_LABELS.picking
-      state.interval = setInterval(() => {
-        const pickedIndex = Math.floor(Math.random() * state.balls.length)
-        state.currentBall = state.balls[pickedIndex]
-        renderCurrentBall(state, elements)
-      }, PICKING_INTERVAL_MS)
+  function picking(state, elements, storage) {
+    if (state.drawSession.stopped) {
+      startPicking(state, elements, storage)
       return
     }
 
     elements.pickButton.innerText = PICK_BUTTON_LABELS.picked
     playSoundEffect()
-    stopPickingSession(state)
-    getBall(state, elements)
+    stopPickingSession(state, storage)
+    commitPickedBall(state, elements, storage)
   }
 
   function handlePickButtonClick(state, elements, storage, defaultTotal) {
-    if (state.balls.length > 1) {
-      picking(state, elements)
+    if (state.drawSession.remainingBalls.length > 1) {
+      picking(state, elements, storage)
       return
     }
 
-    if (state.balls.length === 1) {
-      finishLastBall(state, elements)
+    if (state.drawSession.remainingBalls.length === 1) {
+      finishLastBall(state, elements, storage)
       return
     }
 
     restartPicking(state, elements, storage, defaultTotal)
   }
 
-  function finishLastBall(state, elements) {
-    state.currentBall = state.balls[0]
+  function startPicking(state, elements, storage) {
+    state.drawSession.stopped = false
+    elements.pickButton.innerText = PICK_BUTTON_LABELS.picking
+    state.drawSession.interval = setInterval(() => {
+      const pickedIndex = Math.floor(Math.random() * state.drawSession.remainingBalls.length)
+      state.drawSession.currentBall = state.drawSession.remainingBalls[pickedIndex]
+      renderCurrentBall(state, elements)
+    }, PICKING_INTERVAL_MS)
+    persistSession(state, storage)
+  }
+
+  function finishLastBall(state, elements, storage) {
+    state.drawSession.currentBall = state.drawSession.remainingBalls[0]
     renderCurrentBall(state, elements)
-    getBall(state, elements)
+    commitPickedBall(state, elements, storage)
     elements.pickButton.innerText = PICK_BUTTON_LABELS.restart
   }
 
   function restartPicking(state, elements, storage, defaultTotal) {
     const { total, exnumbers } = getStoredSettings(storage, defaultTotal)
-    initBalls(state, elements, total, exnumbers)
+    initBalls(state, elements, storage, total, exnumbers)
   }
 
-  function getBall(state, elements) {
-    if (!state.currentBall) {
+  function commitPickedBall(state, elements, storage) {
+    const selectedBall = resolveSelectedBall(state, elements, storage)
+    if (!selectedBall) {
       return
     }
 
-    const currentBallNumber = state.currentBall.number
-    for (let index = 0; index < state.balls.length; index += 1) {
-      if (state.balls[index].number === currentBallNumber) {
-        moveBallAtIndex(index, state.balls, state.pickedBalls)
-        renderPickedBalls(state, elements)
-        break
+    state.drawSession.currentBall = selectedBall
+    renderCurrentBall(state, elements)
+
+    const currentBallIndex = state.drawSession.remainingBalls.findIndex(
+      (ball) => ball.number === selectedBall.number
+    )
+
+    if (currentBallIndex === -1) {
+      return
+    }
+
+    moveBallAtIndex(currentBallIndex, state.drawSession.remainingBalls, state.drawSession.pickedBalls)
+    renderPickedBalls(state, elements)
+    renderControlPanel(state, elements)
+    persistSession(state, storage)
+  }
+
+  function resolveSelectedBall(state, elements, storage) {
+    const reservedBall = consumeReservedBall(state, elements, storage)
+    if (reservedBall) {
+      return reservedBall
+    }
+
+    if (state.drawSession.currentBall) {
+      const matchedBall = state.drawSession.remainingBalls.find(
+        (ball) => ball.number === state.drawSession.currentBall.number
+      )
+      if (matchedBall) {
+        return matchedBall
       }
     }
+
+    return state.drawSession.remainingBalls[0] ?? null
   }
 
-  function returnPickedBall(ballNumber, state, elements) {
-    if (state.pickedBalls.length === 0) {
+  function returnPickedBall(ballNumber, state, elements, storage) {
+    if (state.drawSession.pickedBalls.length === 0) {
       return
     }
 
-    const pickedBallIndex = state.pickedBalls.findIndex((ball) => ball.number === ballNumber)
+    const pickedBallIndex = state.drawSession.pickedBalls.findIndex((ball) => ball.number === ballNumber)
     if (pickedBallIndex === -1) {
       return
     }
 
-    moveBallAtIndex(pickedBallIndex, state.pickedBalls, state.balls)
+    moveBallAtIndex(pickedBallIndex, state.drawSession.pickedBalls, state.drawSession.remainingBalls)
     clearCurrentBall(state, elements)
     renderPickedBalls(state, elements)
+    renderControlPanel(state, elements)
+    persistSession(state, storage)
   }
 
   function moveBallAtIndex(ballIndex, sourceBalls, targetBalls) {
@@ -95,14 +136,6 @@ function createPickingModule({ constants, settingsStorage, render, initGame, ses
 
   return {
     handlePickButtonClick,
-    picking,
-    finishLastBall,
-    restartPicking,
-    getBall,
-    returnPickedBall,
-    moveBallAtIndex
+    returnPickedBall
   }
 }
-
-window.SuksukApp = window.SuksukApp || {}
-window.SuksukApp.createPickingModule = createPickingModule
