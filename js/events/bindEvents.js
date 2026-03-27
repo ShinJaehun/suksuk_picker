@@ -21,10 +21,10 @@ function createEventsModule({ settingsStorage, initGame, picking, sessionState, 
       submitSettingsForm(event, state, elements, storage)
     })
 
-    elements.initBtn.onclick = function () {
+    elements.initBtn.addEventListener("click", function () {
       resetStoredSettings(storage)
       startGame({ state, elements, storage, defaultTotal })
-    }
+    })
 
     elements.ballContainerDiv.addEventListener("click", function (event) {
       const clickedBallNumber = getClickedPickedBallNumber(event)
