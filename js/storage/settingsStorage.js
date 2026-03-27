@@ -1,4 +1,4 @@
-function createSettingsStorageModule({ storageKeys, defaultUsername }) {
+export function createSettingsStorage({ storageKeys, defaultUsername }) {
   function readStoredExcludedNumbers(storage) {
     const rawValue = storage.getItem(storageKeys.exnumbers)
     if (!rawValue) {
@@ -42,6 +42,3 @@ function createSettingsStorageModule({ storageKeys, defaultUsername }) {
     resetStoredSettings
   }
 }
-
-window.SuksukApp = window.SuksukApp || {}
-window.SuksukApp.createSettingsStorageModule = createSettingsStorageModule

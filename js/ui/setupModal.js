@@ -1,14 +1,14 @@
-function hideSettingsModal(elements) {
+export function hideSettingsModal(elements) {
   elements.settingsModal.style.display = "none"
 }
 
-function createSetupModalModule({ settingsStorage, sessionState }) {
+export function createSetupModal({ settingsStorage, sessionState }) {
   const { getStoredSettings } = settingsStorage
   const { resetCurrentSelection } = sessionState
 
   function bindSetupModal({ state, elements, storage, defaultTotal }) {
     elements.setupBtn.addEventListener("click", function () {
-      resetCurrentSelection(state, elements)
+      resetCurrentSelection(state, elements, storage)
       elements.settingsModal.style.display = "block"
 
       const settings = getStoredSettings(storage, defaultTotal)
@@ -36,6 +36,3 @@ function createSetupModalModule({ settingsStorage, sessionState }) {
     bindSetupModal
   }
 }
-
-window.SuksukApp = window.SuksukApp || {}
-window.SuksukApp.createSetupModalModule = createSetupModalModule

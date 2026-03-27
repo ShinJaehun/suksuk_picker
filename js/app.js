@@ -1,54 +1,83 @@
+import {
+  DEFAULT_TOTAL_COUNT,
+  DEFAULT_BALL_CONTAINER_COLS,
+  STORAGE_DEFAULT_USERNAME,
+  STORAGE_KEYS,
+  RESERVATION_MESSAGES,
+  BALL_CONTAINER_COL_RULES,
+  PICK_BUTTON_LABELS,
+  PICKING_INTERVAL_MS
+} from "./constants.js"
+import { getElements } from "./elements.js"
+import { createState } from "./state/createState.js"
+import { createSettingsStorage } from "./storage/settingsStorage.js"
+import { createSessionStorage } from "./storage/sessionStorage.js"
+import { createInitGame } from "./game/initGame.js"
+import { createPicking } from "./game/picking.js"
+import { createReservation } from "./game/reservation.js"
+import { createSessionState } from "./game/sessionState.js"
+import { bindEvents } from "./events/bindEvents.js"
+import { createSettingsForm } from "./events/settingsForm.js"
+import { createSetupModal } from "./ui/setupModal.js"
+import * as render from "./ui/render.js"
+import * as controlPanel from "./ui/controlPanel.js"
+
 function main() {
-  const app = window.SuksukApp
-  const {
+  const storage = window.localStorage
+  const state = createState({
+    defaultBallContainerCols: DEFAULT_BALL_CONTAINER_COLS
+  })
+  const elements = getElements()
+
+  const constants = {
     DEFAULT_TOTAL_COUNT,
     DEFAULT_BALL_CONTAINER_COLS,
     STORAGE_DEFAULT_USERNAME,
-    STORAGE_KEYS
-  } = app.constants
-  const { getElements } = app.elements
-  const stateModule = app.createStateModule({
-    defaultBallContainerCols: DEFAULT_BALL_CONTAINER_COLS
-  })
-  const settingsStorage = app.createSettingsStorageModule({
+    STORAGE_KEYS,
+    RESERVATION_MESSAGES,
+    BALL_CONTAINER_COL_RULES,
+    PICK_BUTTON_LABELS,
+    PICKING_INTERVAL_MS
+  }
+  const settingsStorage = createSettingsStorage({
     storageKeys: STORAGE_KEYS,
     defaultUsername: STORAGE_DEFAULT_USERNAME
   })
-  const render = app.render
-  const sessionState = app.createSessionStateModule({ render })
-  const initGame = app.createInitGameModule({
-    constants: app.constants,
-    settingsStorage,
+  const sessionStorage = createSessionStorage({
+    storageKeys: STORAGE_KEYS
+  })
+  const sessionState = createSessionState({ render, sessionStorage })
+  const reservation = createReservation({
     render,
-    sessionState
-  })
-  const picking = app.createPickingModule({
-    constants: app.constants,
-    settingsStorage,
-    render,
-    initGame,
-    sessionState
-  })
-  const setupModal = app.createSetupModalModule({
-    settingsStorage,
-    sessionState
-  })
-  const events = app.createEventsModule({
-    settingsStorage,
-    initGame,
-    picking,
     sessionState,
-    settingsForm: app.createSettingsFormModule({
-      settingsStorage,
-      initGame
-    })
+    messages: RESERVATION_MESSAGES
+  })
+  const initGame = createInitGame({
+    constants,
+    settingsStorage,
+    sessionStorage,
+    render,
+    sessionState
+  })
+  const picking = createPicking({
+    constants,
+    settingsStorage,
+    render,
+    initGame,
+    sessionState,
+    reservation
+  })
+  const settingsForm = createSettingsForm({
+    settingsStorage,
+    initGame,
+    reservation
+  })
+  const setupModal = createSetupModal({
+    settingsStorage,
+    sessionState
   })
 
-  const storage = window.localStorage
-  const state = stateModule.createState()
-  const elements = getElements()
-
-  state.ballContainerColNum = initGame.getBallContainerColumnCount(window.innerWidth)
+  state.ui.ballContainerColNum = initGame.getBallContainerColumnCount(window.innerWidth)
 
   setupModal.bindSetupModal({
     state,
@@ -64,16 +93,20 @@ function main() {
     defaultTotal: DEFAULT_TOTAL_COUNT
   })
 
-  events.bindEvents({
+  bindEvents({
     state,
     elements,
     storage,
-    defaultTotal: DEFAULT_TOTAL_COUNT
+    defaultTotal: DEFAULT_TOTAL_COUNT,
+    settingsStorage,
+    sessionStorage,
+    initGame,
+    picking,
+    settingsForm,
+    reservation,
+    controlPanel
   })
 }
-
-window.SuksukApp = window.SuksukApp || {}
-window.SuksukApp.main = main
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", main, { once: true })
