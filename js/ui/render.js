@@ -1,6 +1,10 @@
 import { RESERVATION_STATUS_LABEL } from "../constants.js"
 
 export function renderCurrentBall(state, elements) {
+  if (!elements.ballDiv) {
+    return
+  }
+
   const { currentBall } = state.drawSession
   if (!currentBall) {
     clearCurrentBall(state, elements)
@@ -13,11 +17,19 @@ export function renderCurrentBall(state, elements) {
 
 export function clearCurrentBall(state, elements) {
   state.drawSession.currentBall = null
+  if (!elements.ballDiv) {
+    return
+  }
+
   elements.ballDiv.innerText = ""
   elements.ballDiv.style.backgroundColor = "white"
 }
 
 export function renderPickedBalls(state, elements) {
+  if (!elements.ballContainerDiv) {
+    return
+  }
+
   emptyContainer(elements)
 
   for (let index = 0; index < state.drawSession.pickedBalls.length; index += 1) {
@@ -26,6 +38,10 @@ export function renderPickedBalls(state, elements) {
 }
 
 export function renderControlPanel(state, elements) {
+  if (!elements.reservedBallStatus || !elements.reservationMessage) {
+    return
+  }
+
   const reservedBallLabel = state.control.nextReservedBall === null
     ? `${RESERVATION_STATUS_LABEL}: 없음`
     : `${RESERVATION_STATUS_LABEL}: ${state.control.nextReservedBall}`
@@ -35,6 +51,10 @@ export function renderControlPanel(state, elements) {
 }
 
 export function emptyContainer(elements) {
+  if (!elements.ballContainerDiv) {
+    return
+  }
+
   elements.ballContainerDiv.querySelectorAll(".row").forEach((rowElement) => rowElement.remove())
 }
 

@@ -22,12 +22,36 @@ import { createSetupModal } from "./ui/setupModal.js"
 import * as render from "./ui/render.js"
 import * as controlPanel from "./ui/controlPanel.js"
 
+function syncFromStorage({ state, elements, storage, defaultTotal, initGame }) {
+  initGame.initGame({
+    state,
+    elements,
+    storage,
+    defaultTotal
+  })
+
+  window.addEventListener("storage", function (event) {
+    if (!Object.values(STORAGE_KEYS).includes(event.key)) {
+      return
+    }
+
+    initGame.initGame({
+      state,
+      elements,
+      storage,
+      defaultTotal
+    })
+  })
+}
+
 function main() {
   const storage = window.localStorage
   const state = createState({
     defaultBallContainerCols: DEFAULT_BALL_CONTAINER_COLS
   })
   const elements = getElements()
+  const isDisplayPage = elements.appRole === "display"
+  const isControlPage = elements.appRole === "control"
 
   const constants = {
     DEFAULT_TOTAL_COUNT,
@@ -79,33 +103,38 @@ function main() {
 
   state.ui.ballContainerColNum = initGame.getBallContainerColumnCount(window.innerWidth)
 
-  setupModal.bindSetupModal({
-    state,
-    elements,
-    storage,
-    defaultTotal: DEFAULT_TOTAL_COUNT
-  })
-
-  initGame.initGame({
-    state,
-    elements,
-    storage,
-    defaultTotal: DEFAULT_TOTAL_COUNT
-  })
-
-  bindEvents({
+  syncFromStorage({
     state,
     elements,
     storage,
     defaultTotal: DEFAULT_TOTAL_COUNT,
-    settingsStorage,
-    sessionStorage,
-    initGame,
-    picking,
-    settingsForm,
-    reservation,
-    controlPanel
+    initGame
   })
+
+  if (isDisplayPage) {
+    setupModal.bindSetupModal({
+      state,
+      elements,
+      storage,
+      defaultTotal: DEFAULT_TOTAL_COUNT
+    })
+  }
+
+  if (isDisplayPage || isControlPage) {
+    bindEvents({
+      state,
+      elements,
+      storage,
+      defaultTotal: DEFAULT_TOTAL_COUNT,
+      settingsStorage,
+      sessionStorage,
+      initGame,
+      picking,
+      settingsForm,
+      reservation,
+      controlPanel
+    })
+  }
 }
 
 if (document.readyState === "loading") {
