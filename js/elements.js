@@ -1,5 +1,8 @@
 export function getElements() {
+  const appRole = document.body.dataset.pageRole === "control" ? "control" : "display"
+
   return {
+    appRole,
     ballDiv: document.querySelector(".ball"),
     ballContainerDiv: document.querySelector(".ball-container"),
     pickButton: document.getElementById("pick"),

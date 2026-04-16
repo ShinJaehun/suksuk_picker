@@ -37,7 +37,9 @@ export function createInitGame({ constants, settingsStorage, sessionStorage, ren
       )
       state.control.message = ""
 
-      elements.pickButton.innerText = getPickButtonLabel(state)
+      if (elements.pickButton) {
+        elements.pickButton.innerText = getPickButtonLabel(state)
+      }
       renderCurrentBall(state, elements)
       renderPickedBalls(state, elements)
       renderControlPanel(state, elements)
@@ -61,8 +63,12 @@ export function createInitGame({ constants, settingsStorage, sessionStorage, ren
     state.control.message = ""
 
     emptyContainer(elements)
-    elements.pickButton.innerText = PICK_BUTTON_LABELS.start
-    elements.settingsModal.style.display = "none"
+    if (elements.pickButton) {
+      elements.pickButton.innerText = PICK_BUTTON_LABELS.start
+    }
+    if (elements.settingsModal) {
+      elements.settingsModal.style.display = "none"
+    }
     renderCurrentBall(state, elements)
     renderPickedBalls(state, elements)
     renderControlPanel(state, elements)

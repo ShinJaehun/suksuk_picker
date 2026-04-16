@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="#">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    <title>SUKSUK PPOBA CONTROL</title>
+</head>
+<link rel="stylesheet" href="style.css">
+<body data-page-role="control">
+    <div class="container">
+        <h1>쑥쑥뽑아 관리 페이지</h1>
+        <section class="control-panel" aria-label="진행 제어 패널">
+            <div class="control-panel-title">진행 제어</div>
+            <form id="reservation-form" class="control-panel-form">
+                <label for="next-reserved-ball">다음 1명 예약</label>
+                <input type="text" id="next-reserved-ball" class="control-panel-input" inputmode="numeric" />
+                <button type="submit" id="reserve-ball">예약</button>
+                <button type="button" id="clear-reserved-ball">예약 취소</button>
+            </form>
+            <p id="reserved-ball-status" class="control-panel-status">현재 예약: 없음</p>
+            <p id="reservation-message" class="control-panel-message" aria-live="polite"></p>
+        </section>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
